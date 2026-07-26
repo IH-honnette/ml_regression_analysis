@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.python-version
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Flutter / Dart
+summative/FlutterApp/.dart_tool/
+summative/FlutterApp/build/
+summative/FlutterApp/.flutter-plugins
+summative/FlutterApp/.flutter-plugins-dependencies
+summative/FlutterApp/**/Pods/
+summative/FlutterApp/**/.gradle/
+
+# OS
+.DS_Store
