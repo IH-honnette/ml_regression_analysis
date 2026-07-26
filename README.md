@@ -68,11 +68,11 @@ linear_regression_model/
 │   │   ├── data/Engineering_graduate_salary.csv
 │   │   ├── models/               # best_model.pkl, scaler.pkl, metadata.pkl
 │   │   └── figures/
-│   ├── API/
+│   ├── api/
 │   │   ├── prediction.py         # Task 2: FastAPI (predict + retrain + CORS)
 │   │   ├── requirements.txt
 │   │   └── models/
-│   └── FlutterApp/               # Task 3: single-page mobile predictor
+│   └── flutterapp/               # Task 3: single-page mobile predictor
 ```
 
 ## Running the notebook / API locally
@@ -84,7 +84,7 @@ uv sync                                   # create env + install deps
 # Notebook
 uv run jupyter lab summative/linear_regression/multivariate.ipynb
 # API (Swagger at http://127.0.0.1:8000/docs)
-uv run uvicorn prediction:app --app-dir summative/API --reload
+uv run uvicorn prediction:app --app-dir summative/api --reload
 ```
 
 ## Running the mobile app
@@ -92,7 +92,7 @@ uv run uvicorn prediction:app --app-dir summative/API --reload
 Requires the [Flutter SDK](https://docs.flutter.dev/get-started/install).
 
 ```bash
-cd summative/FlutterApp
+cd summative/flutterapp
 flutter pub get
 # 1) Set the API URL: edit lib/main.dart -> kApiBaseUrl = "<your Render URL>"
 # 2) Launch on a connected device or emulator:

@@ -9,19 +9,19 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Flutter / Dart
-summative/FlutterApp/.dart_tool/
-summative/FlutterApp/build/
-summative/FlutterApp/.flutter-plugins
-summative/FlutterApp/.flutter-plugins-dependencies
-summative/FlutterApp/**/Pods/
-summative/FlutterApp/**/.gradle/
+summative/flutterapp/.dart_tool/
+summative/flutterapp/build/
+summative/flutterapp/.flutter-plugins
+summative/flutterapp/.flutter-plugins-dependencies
+summative/flutterapp/**/Pods/
+summative/flutterapp/**/.gradle/
 
 # Auto-generated app icons / launch images (regenerate with your icon tool if needed)
-summative/FlutterApp/android/app/src/main/res/mipmap-*/*.png
-summative/FlutterApp/ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png
-summative/FlutterApp/ios/Runner/Assets.xcassets/LaunchImage.imageset/*.png
-summative/FlutterApp/web/icons/*.png
-summative/FlutterApp/web/favicon.png
+summative/flutterapp/android/app/src/main/res/mipmap-*/*.png
+summative/flutterapp/ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png
+summative/flutterapp/ios/Runner/Assets.xcassets/LaunchImage.imageset/*.png
+summative/flutterapp/web/icons/*.png
+summative/flutterapp/web/favicon.png
 
 # Notebook figures (already embedded as outputs in the notebook itself)
 summative/linear_regression/figures/
