@@ -46,7 +46,6 @@ class FieldSpec {
       {this.isInt = false});
 }
 
-/// A titled group of related fields.
 class FormSection {
   final String title;
   final IconData icon;
@@ -92,7 +91,6 @@ const List<FormSection> kSections = [
   ]),
 ];
 
-/// Flat list of every field, in order — used for controllers and validation.
 final List<FieldSpec> kFields = [for (final s in kSections) ...s.fields];
 
 class PredictionPage extends StatefulWidget {
@@ -115,7 +113,7 @@ class _PredictionPageState extends State<PredictionPage> {
   String? _result;
   String? _resultRwf;
   bool _isError = false;
-  String? _focusedKey; // which field currently has focus (for the info banner)
+  String? _focusedKey;
 
   @override
   void initState() {
@@ -189,7 +187,6 @@ class _PredictionPageState extends State<PredictionPage> {
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body);
         final salary = (data['predicted_salary'] as num).toDouble();
-        // Prefer the API's RWF value if present; otherwise convert locally.
         final rwf = data['predicted_salary_rwf'] != null
             ? (data['predicted_salary_rwf'] as num).toDouble()
             : salary * kInrToRwf;
@@ -293,7 +290,6 @@ class _PredictionPageState extends State<PredictionPage> {
     );
   }
 
-  /// Fixed banner at the top that explains the currently-focused field.
   Widget _buildInfoBanner(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final field = _focusedField;

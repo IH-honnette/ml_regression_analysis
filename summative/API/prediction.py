@@ -1,19 +1,12 @@
 """FastAPI service for engineering-graduate salary prediction.
 
-Endpoints
----------
-GET  /            health check + metadata
-POST /predict     predict salary from 12 validated inputs
-POST /retrain     re-fit the model from an uploaded CSV and hot-swap it
-
-Run locally:  uv run uvicorn prediction:app --reload --app-dir summative/API
-Swagger UI:   <base-url>/docs
+Endpoints: GET / (health), POST /predict, POST /retrain.
+Run: uv run uvicorn prediction:app --reload --app-dir summative/API
 """
 from __future__ import annotations
 
 import io
 from pathlib import Path
-from typing import Optional
 
 import joblib
 import numpy as np
@@ -27,6 +20,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 MODELS = Path(__file__).resolve().parent / "models"
+INR_TO_RWF = 15.28  # mid-market rate (~July 2026)
 
 FEATURES = [
     "CollegeTier", "collegeGPA", "English", "Logical", "Quant", "Domain",
@@ -34,9 +28,7 @@ FEATURES = [
     "extraversion", "nueroticism", "openess_to_experience",
 ]
 
-# ---------------------------------------------------------------------------
-# Model state (loaded once, replaceable by /retrain)
-# ---------------------------------------------------------------------------
+
 class ModelState:
     def __init__(self) -> None:
         self.model = joblib.load(MODELS / "best_model.pkl")
@@ -49,9 +41,6 @@ class ModelState:
 
 state = ModelState()
 
-# ---------------------------------------------------------------------------
-# App + CORS
-# ---------------------------------------------------------------------------
 app = FastAPI(
     title="Engineering Graduate Salary Prediction API",
     description="Predicts an engineering graduate's starting salary (INR) from "
@@ -59,21 +48,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS is configured with an explicit allow-list rather than a wildcard.
-#   * allow_origins  — only the Flutter app hosts and our own docs may call the
-#                      API from a browser; unknown origins are rejected.
-#   * allow_methods  — the API only serves GET (health) and POST (predict,
-#                      retrain), plus the OPTIONS pre-flight; nothing else.
-#   * allow_headers  — limited to the headers the client actually sends.
-#   * allow_credentials = False — the API is stateless and uses no cookies or
-#                      auth sessions, so credentialed cross-site requests are
-#                      unnecessary and are disabled to reduce attack surface.
+# Explicit allow-list, not a wildcard: only our own front-ends may call the API,
+# only the methods/headers it uses, and credentials are off (the API is stateless).
 ALLOWED_ORIGINS = [
     "http://localhost",
-    "http://localhost:8080",     # Flutter web dev server
+    "http://localhost:8080",
     "http://localhost:3000",
     "http://127.0.0.1:8080",
-    "capacitor://localhost",     # mobile webview origins
+    "capacitor://localhost",
     "http://localhost:5000",
 ]
 
@@ -86,9 +68,6 @@ app.add_middleware(
 )
 
 
-# ---------------------------------------------------------------------------
-# Request / response schemas with type + range constraints
-# ---------------------------------------------------------------------------
 class SalaryFeatures(BaseModel):
     CollegeTier: int = Field(..., ge=1, le=2,
                              description="College tier (1 = top tier, 2 = other)")
@@ -120,16 +99,11 @@ class SalaryFeatures(BaseModel):
     }
 
 
-# Approximate INR -> RWF mid-market rate (~July 2026). Kept as a constant so the
-# API stays offline-friendly; update as needed or wire to an FX service later.
-INR_TO_RWF = 15.28
-
-
 class PredictionResponse(BaseModel):
     predicted_salary: float = Field(..., description="Predicted annual salary in INR")
     currency: str = "INR"
     predicted_salary_rwf: float = Field(
-        ..., description="Predicted annual salary converted to Rwandan Francs (RWF)")
+        ..., description="Predicted annual salary in Rwandan Francs (RWF)")
     inr_to_rwf_rate: float = Field(..., description="INR->RWF rate used")
     model: str
 
@@ -142,9 +116,6 @@ class RetrainResponse(BaseModel):
     model: str
 
 
-# ---------------------------------------------------------------------------
-# Endpoints
-# ---------------------------------------------------------------------------
 @app.get("/")
 def root() -> dict:
     return {
@@ -158,8 +129,7 @@ def root() -> dict:
 @app.post("/predict", response_model=PredictionResponse)
 def predict(payload: SalaryFeatures) -> PredictionResponse:
     X = pd.DataFrame([payload.model_dump()])
-    salary = float(state.predict(X)[0])
-    salary = max(salary, 0.0)  # salary cannot be negative
+    salary = max(float(state.predict(X)[0]), 0.0)
     return PredictionResponse(
         predicted_salary=round(salary, 2),
         predicted_salary_rwf=round(salary * INR_TO_RWF, 2),
@@ -170,17 +140,13 @@ def predict(payload: SalaryFeatures) -> PredictionResponse:
 
 @app.post("/retrain", response_model=RetrainResponse)
 async def retrain(file: UploadFile = File(...)) -> RetrainResponse:
-    """Re-train the model on a newly uploaded CSV and hot-swap it in memory.
-
-    The CSV must contain the 12 feature columns plus a `Salary` target column.
-    On success the live model, scaler and metadata are replaced without a restart.
-    """
+    """Re-fit the model on an uploaded CSV (12 features + Salary) and hot-swap it."""
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Please upload a .csv file.")
     raw = await file.read()
     try:
         df = pd.read_csv(io.BytesIO(raw))
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         raise HTTPException(status_code=400, detail=f"Could not parse CSV: {exc}")
 
     missing = [c for c in FEATURES + ["Salary"] if c not in df.columns]
@@ -188,13 +154,11 @@ async def retrain(file: UploadFile = File(...)) -> RetrainResponse:
         raise HTTPException(status_code=422,
                             detail=f"Missing required columns: {missing}")
 
-    # Same cleaning as training: impute -1 sentinels, cap salary outliers.
     for col in ["ComputerProgramming", "Domain"]:
         df[col] = df[col].replace(-1, np.nan)
         df[col] = df[col].fillna(df[col].median())
     df = df.dropna(subset=FEATURES + ["Salary"])
-    cap = df["Salary"].quantile(0.99)
-    df = df[df["Salary"] <= cap]
+    df = df[df["Salary"] <= df["Salary"].quantile(0.99)]
     if len(df) < 50:
         raise HTTPException(status_code=422,
                             detail="Not enough valid rows to retrain (need >= 50).")
@@ -207,7 +171,6 @@ async def retrain(file: UploadFile = File(...)) -> RetrainResponse:
     rmse = float(mean_squared_error(y_te, pred) ** 0.5)
     r2 = float(r2_score(y_te, pred))
 
-    # Persist and hot-swap.
     joblib.dump(model, MODELS / "best_model.pkl")
     joblib.dump(scaler, MODELS / "scaler.pkl")
     meta = {"features": FEATURES, "best_model": "Linear Regression (retrained)"}

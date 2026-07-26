@@ -19,7 +19,7 @@ categories) and gender. Target: `Salary` (INR).
 
 ## Video Demo
 
-▶️ **YouTube:** _add link here_
+▶️ **YouTube:** https://youtu.be/CHZHVN-teGM
 
 ### Visualizations (in the notebook)
 

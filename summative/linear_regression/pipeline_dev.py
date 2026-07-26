@@ -83,7 +83,7 @@ def main() -> None:
             "train_rmse": mean_squared_error(y_train, pred_tr) ** 0.5,
         }
 
-    # 1) SGDRegressor — stochastic gradient descent linear regression.
+    # 1) SGDRegressor - stochastic gradient descent linear regression.
     sgd = SGDRegressor(
         loss="squared_error", penalty="l2", alpha=1e-4,
         learning_rate="invscaling", eta0=0.01, max_iter=2000,
@@ -92,7 +92,7 @@ def main() -> None:
     sgd.fit(X_train_s, y_train)
     evaluate("SGD (Gradient Descent)", sgd, X_train_s, X_test_s)
 
-    # 2) LinearRegression — closed-form OLS.
+    # 2) LinearRegression - closed-form OLS.
     lr = LinearRegression().fit(X_train_s, y_train)
     evaluate("Linear Regression (OLS)", lr, X_train_s, X_test_s)
 
@@ -133,7 +133,7 @@ def main() -> None:
     plt.plot(range(1, n_epochs + 1), test_loss, label="Test loss (MSE)")
     plt.xlabel("Epoch")
     plt.ylabel("Mean Squared Error")
-    plt.title("SGD Linear Regression — Loss Curve")
+    plt.title("SGD Linear Regression - Loss Curve")
     plt.legend()
     plt.tight_layout()
     plt.savefig(FIGS / "loss_curve.png", dpi=110)
@@ -171,7 +171,7 @@ def main() -> None:
     plt.plot(lims, lims, "r--", label="Ideal fit (y = x)")
     plt.xlabel("Actual Salary")
     plt.ylabel("Predicted Salary")
-    plt.title(f"Actual vs Predicted — {best_name}")
+    plt.title(f"Actual vs Predicted - {best_name}")
     plt.legend()
     plt.tight_layout()
     plt.savefig(FIGS / "actual_vs_pred.png", dpi=110)

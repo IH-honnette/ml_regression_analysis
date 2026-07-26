@@ -23,7 +23,7 @@ def code(text):
 
 
 md(r"""
-# Engineering Graduate Salary Prediction — Multivariate Linear Regression
+# Engineering Graduate Salary Prediction - Multivariate Linear Regression
 
 **Mission.** Extending the *Stint* mission (connecting ALU students to real
 opportunities), this notebook builds a regression model that predicts an
@@ -32,12 +32,12 @@ aptitude and domain-skill scores, and Big-Five personality traits. The goal is t
 surface which factors actually move employability and pay.
 
 **Dataset.** AMEO 2015 *Engineering Graduate Salary Prediction* (Aspiring Minds
-Employability Outcomes) — **2,998 rows × 34 columns**, target `Salary` (INR).
+Employability Outcomes) - **2,998 rows × 34 columns**, target `Salary` (INR).
 Source: Kaggle `manishkc06/engineering-graduate-salary-prediction`.
 
 We (1) explore & visualize the data, (2) engineer features, (3) standardize,
-(4) compare **four** regression algorithms — stochastic gradient descent,
-closed-form linear regression, a decision tree, and a random forest — (5) plot
+(4) compare **four** regression algorithms - stochastic gradient descent,
+closed-form linear regression, a decision tree, and a random forest - (5) plot
 train/test loss curves, (6) save the best model, and (7) predict a single row.
 """)
 
@@ -105,9 +105,9 @@ missing_share.to_frame("share_of_-1")
 """)
 
 md(r"""
-**Interpretation — which columns to drop.** `ElectronicsAndSemicon`,
+**Interpretation - which columns to drop.** `ElectronicsAndSemicon`,
 `ComputerScience`, `MechanicalEngg`, `ElectricalEngg`, `TelecomEngg` and
-`CivilEngg` are **-1 (not attempted) for 70–99% of students** — they carry almost
+`CivilEngg` are **-1 (not attempted) for 70–99% of students** - they carry almost
 no signal and are dropped. `ComputerProgramming` is attempted by most students, so
 we keep it and impute the remaining `-1`s with the median. Identifier columns
 (`ID`, `DOB`, `CollegeID`, `CollegeCityID`) are dropped because they are not
@@ -158,7 +158,7 @@ plt.title("Correlation Heatmap"); plt.tight_layout(); plt.show()
 """)
 
 md(r"""
-**Interpretation — feature weight.** The aptitude scores **Quant, English and
+**Interpretation - feature weight.** The aptitude scores **Quant, English and
 Logical** and **collegeGPA** show the strongest positive correlation with salary,
 while **CollegeTier** is negatively correlated (tier 1 is the better college, so a
 lower number means higher pay). Personality traits correlate only weakly. This
@@ -192,7 +192,7 @@ print("Train:", X_train_s.shape, "Test:", X_test_s.shape)
 """)
 
 md(r"""
-## 5. Model comparison — 4 algorithms
+## 5. Model comparison - 4 algorithms
 
 We compare stochastic gradient-descent linear regression against three other
 implementations: closed-form linear regression, a decision tree, and a random
@@ -243,14 +243,14 @@ print("Best model (lowest test RMSE / MSE):", best_name)
 
 md(r"""
 **Criterion for "best".** We select the model with the **lowest test MSE/RMSE**
-(the loss metric) — i.e. the smallest average squared prediction error on unseen
+(the loss metric) - i.e. the smallest average squared prediction error on unseen
 data. The linear models and the random forest are near-tied; the closed-form
 **Linear Regression** wins narrowly, and SGD converges to essentially the same
 solution, confirming the relationship is close to linear.
 """)
 
 md(r"""
-## 6. Loss curve — train vs test (SGD via `partial_fit`)
+## 6. Loss curve - train vs test (SGD via `partial_fit`)
 
 We train the SGD model one epoch at a time and record MSE on the train and test
 sets after each epoch.
@@ -270,19 +270,19 @@ for _ in range(n_epochs):
 plt.figure(figsize=(7, 4.5))
 plt.plot(range(1, n_epochs + 1), train_loss, label="Train loss (MSE)")
 plt.plot(range(1, n_epochs + 1), test_loss, label="Test loss (MSE)")
-plt.xlabel("Epoch"); plt.ylabel("MSE"); plt.title("SGD Linear Regression — Loss Curve")
+plt.xlabel("Epoch"); plt.ylabel("MSE"); plt.title("SGD Linear Regression - Loss Curve")
 plt.legend(); plt.tight_layout(); plt.show()
 """)
 
 md(r"""
 **Interpretation.** Both curves fall quickly and then **plateau together** with a
-small gap — the model is **not overfitting** (train and test loss stay close). The
+small gap - the model is **not overfitting** (train and test loss stay close). The
 plateau height is set by the irreducible noise in salary, which is why adding more
 epochs alone will not lower the loss much.
 """)
 
 md(r"""
-## 7. Scatter plots — before vs after fitting the linear line
+## 7. Scatter plots - before vs after fitting the linear line
 """)
 
 code(r"""
@@ -290,7 +290,7 @@ fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 
 # BEFORE: raw data, no fitted line
 axes[0].scatter(X_test[top_feat], y_test, alpha=0.3, color="steelblue")
-axes[0].set_title(f"Before — {top_feat} vs Salary (raw)")
+axes[0].set_title(f"Before - {top_feat} vs Salary (raw)")
 axes[0].set_xlabel(top_feat); axes[0].set_ylabel("Salary")
 
 # AFTER: linear fit line through the data
@@ -299,7 +299,7 @@ order = np.argsort(xt)
 lr_pred = lr.predict(X_test_s)
 axes[1].scatter(xt, y_test, alpha=0.3, color="steelblue", label="Actual")
 axes[1].plot(xt[order], lr_pred[order], "r-", lw=2, label="Linear fit")
-axes[1].set_title(f"After — Linear line through the data")
+axes[1].set_title(f"After - Linear line through the data")
 axes[1].set_xlabel(top_feat); axes[1].set_ylabel("Salary"); axes[1].legend()
 plt.tight_layout(); plt.show()
 """)
@@ -313,7 +313,7 @@ plt.scatter(y_test, y_pred_best, alpha=0.4)
 lims = [y_test.min(), y_test.max()]
 plt.plot(lims, lims, "r--", label="Ideal (y = x)")
 plt.xlabel("Actual Salary"); plt.ylabel("Predicted Salary")
-plt.title(f"Actual vs Predicted — {best_name}"); plt.legend()
+plt.title(f"Actual vs Predicted - {best_name}"); plt.legend()
 plt.tight_layout(); plt.show()
 """)
 
