@@ -120,9 +120,17 @@ class SalaryFeatures(BaseModel):
     }
 
 
+# Approximate INR -> RWF mid-market rate (~July 2026). Kept as a constant so the
+# API stays offline-friendly; update as needed or wire to an FX service later.
+INR_TO_RWF = 15.28
+
+
 class PredictionResponse(BaseModel):
     predicted_salary: float = Field(..., description="Predicted annual salary in INR")
     currency: str = "INR"
+    predicted_salary_rwf: float = Field(
+        ..., description="Predicted annual salary converted to Rwandan Francs (RWF)")
+    inr_to_rwf_rate: float = Field(..., description="INR->RWF rate used")
     model: str
 
 
@@ -152,8 +160,12 @@ def predict(payload: SalaryFeatures) -> PredictionResponse:
     X = pd.DataFrame([payload.model_dump()])
     salary = float(state.predict(X)[0])
     salary = max(salary, 0.0)  # salary cannot be negative
-    return PredictionResponse(predicted_salary=round(salary, 2),
-                              model=state.meta.get("best_model", "unknown"))
+    return PredictionResponse(
+        predicted_salary=round(salary, 2),
+        predicted_salary_rwf=round(salary * INR_TO_RWF, 2),
+        inr_to_rwf_rate=INR_TO_RWF,
+        model=state.meta.get("best_model", "unknown"),
+    )
 
 
 @app.post("/retrain", response_model=RetrainResponse)

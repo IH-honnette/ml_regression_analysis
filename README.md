@@ -2,7 +2,7 @@
 
 ## Mission & Problem
 
-Extending the *Stint* mission of connecting ALU students to real opportunities,
+Inspired by my mission of connecting young generation  to real opportunities,
 this project predicts an engineering graduate's **starting salary** from academic
 records, standardized aptitude scores, and personality traits — so students can
 see which factors actually move their employability and pay.
@@ -17,21 +17,24 @@ boards, college tier & state, AMCAT aptitude scores (English, Logical, Quant),
 domain-skill scores, all Big-Five personality traits, specialization (42
 categories) and gender. Target: `Salary` (INR).
 
+## Video Demo
+
+▶️ **YouTube:** _add link here_
+
 ### Visualizations (in the notebook)
 
 Correlation heatmap, salary-distribution histogram, strongest-predictor scatter,
 train/test loss curve, and before/after best-fit-line scatter — see
-[`summative/linear_regression/multivariate.ipynb`](summative/linear_regression/multivariate.ipynb)
-(figures also under `summative/linear_regression/figures/`).
+[`summative/linear_regression/multivariate.ipynb`](summative/linear_regression/multivariate.ipynb).
 
 ## Public API
 
-- **Swagger UI:** `https://salary-prediction-api.onrender.com/docs`
-- **Prediction endpoint:** `POST https://salary-prediction-api.onrender.com/predict`
-- **Retrain endpoint:** `POST https://salary-prediction-api.onrender.com/retrain` (multipart CSV upload)
+- **Swagger UI:** https://salary-prediction-api-8tzr.onrender.com/docs
+- **Prediction endpoint:** `POST https://salary-prediction-api-8tzr.onrender.com/predict`
+- **Retrain endpoint:** `POST https://salary-prediction-api-8tzr.onrender.com/retrain` (multipart CSV upload)
 
-> Replace the host above with your own Render URL once deployed. The free Render
-> instance may take ~30–60 s to wake on the first request.
+> The free Render instance may take ~30–60 s to wake on the first request.
+
 
 Example request body:
 
@@ -44,9 +47,6 @@ Example request body:
 }
 ```
 
-## Video Demo
-
-▶️ **YouTube:** _add link here_
 
 ## Models
 
@@ -102,10 +102,3 @@ flutter run
 Enter values in the 12 fields (each with its allowed range shown), tap
 **Predict**, and the estimated annual salary appears in the result card.
 Out-of-range or missing values are flagged inline and by the API.
-
-## Deploying the API to Render
-
-1. Push this repo to GitHub.
-2. On [Render](https://render.com) → **New → Blueprint**, connect the repo; it
-   reads `render.yaml` and deploys the `summative/API` service.
-3. Copy the resulting URL into `kApiBaseUrl` in the Flutter app and the links above.
